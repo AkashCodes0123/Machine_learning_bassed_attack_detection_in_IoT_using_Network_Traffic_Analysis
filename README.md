@@ -1,129 +1,96 @@
 # Machine Learning-Based Attack Detection in IoT Using Network Traffic Analysis
 
-This project presents a machine learning-based Intrusion Detection System (IDS) for IoT network traffic using the **NF-UQ-NIDS-v2** dataset. The goal is to classify traffic as **Benign (0)** or **Attack (1)** using multiple machine learning models and compare their performance on a large-scale, imbalanced dataset.
+> An intelligent, machine learning-driven Intrusion Detection System (IDS) designed to identify and classify cyber threats in resource-constrained Internet of Things (IoT) network environments.
 
-## Overview
+## 📖 Overview
 
-IoT devices are resource-constrained and often cannot run traditional security tools. This project addresses that challenge by building a scalable ML-based IDS that can detect malicious network traffic using flow-based features.
+The rapid proliferation of IoT devices has expanded the attack surface for cyber threats. Because IoT devices are often resource-constrained, deploying traditional on-device security tools is impractical. This project addresses that challenge by building a scalable, machine learning-based IDS that analyzes NetFlow traffic to classify network behavior as either **Benign (0)** or **Attack (1)**. 
 
-The project includes:
+### Key Features
+*   Robust data preprocessing and feature scaling pipelines.
+*   Comparative analysis of state-of-the-art tree-based models and SVMs.
+*   Advanced handling of severe class imbalance in network traffic.
+*   Model interpretability and feature importance extraction using SHAP.
 
-- Data preprocessing and cleaning
-- Feature scaling and correlation analysis
-- Model training and evaluation
-- Explainability using SHAP
-- Model saving for future reuse
+---
 
-## Dataset
+## 📊 Dataset
 
-**Dataset Name:** NF-UQ-NIDS-v2  
-**Source:** University of Queensland eSpace  
-**Link:** https://espace.library.uq.edu.au/view/UQ:631a24a
+The models are trained and evaluated using the **NF-UQ-NIDS-v2** dataset, a comprehensive collection of modern, real-world network traffic flows.
 
-### Dataset Details
+*   **Source:** [University of Queensland eSpace](https://espace.library.uq.edu.au/view/UQ:631a24a)
+*   **Total Records:** 1,048,575
+*   **Raw Features:** 46
+*   **Features Utilized:** 39
+*   **Problem Type:** Binary Classification
+*   **Train/Test Split:** 80% / 20%
 
-- **Total Records:** 1,048,575
-- **Raw Features:** 46
-- **Features Used:** 39
-- **Train/Test Split:** 80% / 20%
-- **Problem Type:** Binary classification
-- **Class Distribution:**
-  - Benign (0): 347,249
-  - Attack (1): 701,326
+### Class Distribution
+The dataset is inherently imbalanced, reflecting real-world network threat landscapes. Algorithmic class weighting is applied during training to mitigate bias.
+*   **Benign (0):** 347,249 samples (33.1%)
+*   **Attack (1):** 701,326 samples (66.9%)
 
-The dataset is imbalanced, so class weighting is used during model training.
+---
 
-## Methodology
+## ⚙️ Methodology
 
-The pipeline followed in this project is:
+The end-to-end machine learning pipeline consists of the following stages:
 
-1. **Data Collection**
-   - NF-UQ-NIDS-v2 network flow records are used for training and testing.
+1.  **Data Ingestion:** Processing raw NF-UQ-NIDS-v2 network flow records.
+2.  **Preprocessing & Engineering:** 
+    *   Removal of topology-specific identifiers (IP addresses, ports) to prevent overfitting.
+    *   Replacement of missing (`NaN`) and infinite (`Inf`) values with zero.
+    *   Feature standardization using `StandardScaler`.
+    *   Data type conversion to `float32` and extreme outlier clipping for computational efficiency.
+3.  **Exploratory Data Analysis (EDA):** Class distribution tracking and feature correlation mapping.
+4.  **Model Training:** Parallelized training across four distinct algorithms.
+5.  **Evaluation:** Multi-metric performance validation (Accuracy, Precision, Recall, F1-score) and learning curve analysis.
+6.  **Explainability:** Utilizing SHAP (SHapley Additive exPlanations) to interpret model decisions.
 
-2. **Preprocessing**
-   - IP and port columns are removed
-   - Missing and infinite values are replaced with zero
-   - Features are scaled using `StandardScaler`
-   - Data is converted to `float32` for memory efficiency
-   - Outliers are clipped to reduce instability
+---
 
-3. **Exploratory Data Analysis**
-   - Class distribution is analyzed
-   - Feature correlation heatmap is generated
+## 🧠 Models Evaluated
 
-4. **Model Training**
-   - Random Forest
-   - XGBoost
-   - LightGBM
-   - SVM using `Nystroem` approximation + `SGDClassifier`
+*   **Random Forest:** An ensemble of 200 decision trees utilizing `class_weight='balanced'` to establish a strong, generalized baseline for tabular network data.
+*   **XGBoost:** A highly scalable gradient boosting framework configured with `scale_pos_weight` to manage class imbalance, achieving the lowest false positive rate.
+*   **LightGBM:** A gradient boosting model utilizing a leaf-wise tree growth strategy, providing the optimal trade-off between computational speed and predictive accuracy on large datasets.
+*   **Support Vector Machine (SVM):** Implemented via a `Nystroem` kernel approximation and `SGDClassifier` to adapt distance-based margin calculations for a massive dataset.
 
-5. **Evaluation**
-   - Accuracy
-   - Precision
-   - Recall
-   - F1-score
-   - Confusion Matrix
-   - Learning Curve
+---
 
-6. **Explainability**
-   - SHAP is applied to XGBoost to identify important features
-
-7. **Model Saving**
-   - All trained models and the scaler are saved using `joblib`
-
-## Models Used
-
-### Random Forest
-- Uses 200 decision trees
-- `class_weight='balanced'`
-- Strong generalization on tabular network data
-
-### XGBoost
-- Gradient boosting model
-- `scale_pos_weight` used to handle class imbalance
-- Best false positive performance among the tested models
-
-### LightGBM
-- Leaf-wise tree growth strategy
-- Fast and efficient on large datasets
-- Strong speed-accuracy tradeoff
-
-### SVM
-- Implemented using `MinMaxScaler`, `Nystroem`, and `SGDClassifier`
-- Useful for large-scale approximation of kernel-based classification
-- Lower performance compared to tree-based models
-
-## Results
+## 📈 Results
 
 | Model | Accuracy | Precision | Recall | F1-Score |
-|------|----------:|----------:|-------:|---------:|
-| Random Forest | 98% | 0.98 | 0.98 | 0.98 |
-| XGBoost | 98% | 0.98 | 0.98 | 0.98 |
-| LightGBM | 98% | 0.98 | 0.97 | 0.97 |
-| SVM | 88% | 0.90 | 0.88 | 0.88 |
+| :--- | :---: | :---: | :---: | :---: |
+| **Random Forest** | 98% | 0.98 | 0.98 | 0.98 |
+| **XGBoost** | 98% | 0.98 | 0.98 | 0.98 |
+| **LightGBM** | 98% | 0.98 | 0.97 | 0.97 |
+| **SVM (Nystroem)** | 88% | 0.90 | 0.88 | 0.88 |
 
-### Key Observations
+**Key Findings:**
+*   **Random Forest** and **XGBoost** delivered the highest overall accuracy and generalization, effectively minimizing critical false negatives.
+*   **LightGBM** demonstrated near-identical predictive performance while drastically reducing training times.
+*   **SVM** underperformed relative to the ensemble models, as the necessary kernel approximation restricted its capacity to capture highly complex, non-linear network patterns.
 
-- **Random Forest** gave the best overall balance of precision, recall, and generalization.
-- **XGBoost** achieved the lowest false positives.
-- **LightGBM** offered the best speed-accuracy tradeoff.
-- **SVM** underperformed because the kernel approximation had limited capacity for this large dataset.
+---
 
-## Explainability
+## 🔍 Model Explainability (SHAP)
 
-SHAP analysis on XGBoost showed that the most important attack indicators include:
+To ensure the IDS is transparent and actionable for security analysts, SHAP analysis was applied to the XGBoost model. The top five most critical features driving the detection of malicious traffic were identified as:
 
-- `DURATION_IN`
-- `L7_PROTO`
-- `TCP_WIN_MAX_IN`
-- `IN_BYTES`
-- `TCP_FLAGS`
+1.  `DURATION_IN`
+2.  `L7_PROTO`
+3.  `TCP_WIN_MAX_IN`
+4.  `IN_BYTES`
+5.  `TCP_FLAGS`
 
-These features help explain how the model distinguishes between benign and malicious traffic.
+---
 
-## Requirements
+## 💻 Installation and Usage
 
-```bash
+### Prerequisites
+Ensure you have Python 3.8+ installed. The following libraries are required:
+```text
 numpy
 pandas
 scikit-learn
@@ -133,55 +100,3 @@ shap
 matplotlib
 seaborn
 joblib
-
-
-git clone https://github.com/your-username/your-repo-name.git
-cd your-repo-name
-pip install -r requirements.txt
-
-Usage
-Open the notebook files in Jupyter Notebook or JupyterLab.
-Run the preprocessing cells.
-Train the models.
-Evaluate the results.
-Load the saved models for inference if needed.
-
-.
-├── intrusion-runned_akashnaik_final_file(2).ipynb
-├── Model test_akashnaik_final(1).ipynb
-├── Machine_Learning_Based_Attack_Detection_in_IoT.pdf
-├── README.md
-└── models/
-    ├── random_forest_model.joblib
-    ├── xgboost_model.joblib
-    ├── lightgbm_model.joblib
-    ├── svm_model.joblib
-    └── scaler.joblib
-
-
-Conclusion
-This project demonstrates that tree-based machine learning models are highly effective for IoT intrusion detection on tabular network traffic data. With proper preprocessing, class imbalance handling, and explainability, the system becomes suitable for practical security applications.
-Future Work
-
-
-Multi-class attack classification
-
-
-Real-time traffic detection
-
-
-Deep learning models such as LSTM or CNN
-
-
-Edge deployment for IoT devices
-
-
-Federated learning across distributed networks
-
-
-Reference
-[1] University of Queensland, “NF-UQ-NIDS-v2 Dataset,” UQ eSpace. Available: https://espace.library.uq.edu.au/view/UQ:631a24a
-[2] A. Naik et al., “Machine Learning-Based Attack Detection in IoT Using Network Traffic Analysis,” M.Sc. Computer Science, Sambalpur University, 2026.
-
-
-
