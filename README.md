@@ -152,10 +152,10 @@ Load the saved models for inference if needed.
 ├── Machine_Learning_Based_Attack_Detection_in_IoT.pdf
 ├── README.md
 └── models/
-    ├── random_forest_model.pkl
-    ├── xgboost_model.pkl
-    ├── lightgbm_model.pkl
-    ├── svm_model.pkl
+    ├── random_forest_model.joblib
+    ├── xgboost_model.joblib
+    ├── lightgbm_model.joblib
+    ├── svm_model.joblib
     └── scaler.joblib
 
 
